@@ -6,8 +6,9 @@ type Router struct {
 	app *app.Application
 }
 
-func NewRouter(app *app.Application) *Router {
+func NewRouter() *Router {
+	a := new(app.Application)
 	return &Router{
-		app: app,
+		app: a,
 	}
 }
