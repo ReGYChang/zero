@@ -25,7 +25,7 @@ func NewWorker(workerPool chan chan Job) Worker {
 func (w Worker) Start() {
 	go func() {
 		for {
-			// register the current worker into the worker queue.
+			// register the current worker into the worker pool.
 			w.WorkerPool <- w.JobChannel
 
 			select {
@@ -41,7 +41,7 @@ func (w Worker) Start() {
 	}()
 }
 
-func (w Worker) stop() {
+func (w Worker) Stop() {
 	go func() {
 		w.done <- true
 	}()
