@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  whoami:
+    image: "traefik/whoami"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+
+networks:
+  default:
+    external:
+      name: gateway_default
