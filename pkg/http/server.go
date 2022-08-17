@@ -12,7 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"golang.org/x/sync/errgroup"
 
-	"zero/pkg/config"
+	"zero/config"
 )
 
 type Server struct {
@@ -26,7 +26,7 @@ type Server struct {
 func NewServer(handler http.Handler) *Server {
 	server := &Server{
 		Server: &http.Server{
-			Addr:    fmt.Sprintf(":%d", config.AppConfig.Port),
+			Addr:    fmt.Sprintf(":%d", config.Entrypoint.Port),
 			Handler: handler,
 		},
 		done: make(chan struct{}),
@@ -40,7 +40,7 @@ func (srv *Server) Start() error {
 	go srv.graceful()
 
 	srv.eg.Go(func() error {
-		log.Info().Msgf("Starting HTTP server [%d]", config.AppConfig.Port)
+		log.Info().Msgf("Starting HTTP server [%d]", config.Entrypoint.Port)
 		return srv.Server.ListenAndServe()
 	})
 

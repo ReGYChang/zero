@@ -16,7 +16,7 @@ import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 
-	"zero/pkg/config"
+	"zero/config"
 )
 
 var (
@@ -60,7 +60,7 @@ func NewServer(handler Handler) *Server {
 
 	return &Server{
 		grpc:    s,
-		Addr:    fmt.Sprintf(":%d", config.AppConfig.Port),
+		Addr:    fmt.Sprintf(":%d", config.Entrypoint.Port),
 		Handler: handler,
 		done:    make(chan struct{}),
 	}
@@ -82,7 +82,7 @@ func (s *Server) Start() error {
 	go s.graceful()
 
 	s.eg.Go(func() error {
-		log.Info().Msgf("Starting gRPC server [%s]", fmt.Sprintf(":%d", config.AppConfig.Port))
+		log.Info().Msgf("Starting gRPC server [%s]", fmt.Sprintf(":%d", config.Entrypoint.Port))
 		return s.listenAndServe()
 	})
 
