@@ -7,8 +7,9 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 
-	"zero/pkg/config"
-	"zero/pkg/logger"
+	"zero/config"
+	"zero/internal/auth/router"
+	"zero/pkg/http"
 )
 
 const (
@@ -16,42 +17,61 @@ const (
 	appVersion                     = "0.0.0"
 	defaultEnv                     = "staging"
 	defaultLogLevel                = "info"
-	defaultPort                    = "8787"
+	defaultPort                    = 8787
 	defaultTokenSigningKey         = "cb-signing-key" // nolint
 	defaultTokenExpiryDurationHour = "8"
 	defaultTokenTokenIssuer        = "zero"
 )
 
+type AppConfig struct {
+	// General configuration
+	Env      string
+	LogLevel string
+
+	// Database configuration
+	DatabaseDSN string
+
+	// HTTP configuration
+	Port int
+
+	// Token configuration
+	TokenSigningKey         string
+	TokenExpiryDurationHour int
+	TokenIssuer             string
+}
+
+var appConfig AppConfig
+
 func main() {
 	app := &cli.App{
-		Name:     "user",
-		Usage:    "Start the user service",
+		Name:     "auth",
+		Usage:    "Start the auth service",
 		Compiled: time.Now(),
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:        "log-level",
 				Usage:       "Log filtering level",
+				Value:       defaultLogLevel,
 				EnvVars:     []string{"ZR_LOG_LEVEL"},
-				Destination: config.AppConfig.Env,
+				Destination: &appConfig.Env,
 			},
 
 			&cli.IntFlag{
 				Name:        "server-port",
 				Usage:       "server port",
+				Value:       defaultPort,
 				EnvVars:     []string{"ZR_PORT"},
-				Destination: config.AppConfig.Port,
+				Destination: &config.Entrypoint.Port,
 			},
 		},
 		Before: func(ctx *cli.Context) error {
-			logger.SetupLogger()
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			//r := router.NewRouter()
-			//s := grpc.NewServer(r)
-			//
-			//return s.Start()
-			return nil
+			r := router.NewRouter()
+			srv := http.NewServer(r.Load())
+
+			return srv.Start()
 		},
 	}
 

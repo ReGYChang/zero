@@ -1,23 +1,11 @@
 package config
 
-type appConfig struct {
-	// General configuration
-	Env      *string
-	LogLevel *string
-
-	// Database configuration
-	DatabaseDSN *string
-
+type entrypoint struct {
 	// HTTP/gRPC configuration
-	Type *string
-	Port *int
-
-	// Token configuration
-	TokenSigningKey         *string
-	TokenExpiryDurationHour *int
-	TokenIssuer             *string
+	Type string
+	Port int
 }
 
 var (
-	AppConfig = &appConfig{}
+	Entrypoint = &entrypoint{}
 )
