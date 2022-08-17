@@ -12,8 +12,8 @@ type Worker struct {
 	done       chan bool
 }
 
-func NewWorker(workerPool chan chan Job) Worker {
-	return Worker{
+func NewWorker(workerPool chan chan Job) *Worker {
+	return &Worker{
 		WorkerPool: workerPool,
 		JobChannel: make(chan Job),
 		done:       make(chan bool),
@@ -22,7 +22,7 @@ func NewWorker(workerPool chan chan Job) Worker {
 
 // Start method starts the run loop for the worker, listening for a done channel in
 // case we need to stop it
-func (w Worker) Start() {
+func (w *Worker) Start() {
 	go func() {
 		for {
 			// register the current worker into the worker pool.
@@ -41,7 +41,7 @@ func (w Worker) Start() {
 	}()
 }
 
-func (w Worker) Stop() {
+func (w *Worker) Stop() {
 	go func() {
 		w.done <- true
 	}()
