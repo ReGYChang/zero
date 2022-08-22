@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"zero/internal/auth/domain/auth"
+	"zero/internal/auth/domain"
 	"zero/internal/auth/domain/common"
 )
 
@@ -16,7 +16,7 @@ type RegisterUserParam struct {
 	Password string
 }
 
-func (s *AuthService) RegisterUser(ctx context.Context, param RegisterUserParam) (*auth.User, common.Error) {
+func (s *AuthService) RegisterUser(ctx context.Context, param RegisterUserParam) (*domain.User, common.Error) {
 	// Check the given user email exist or not
 	_, err := s.userRepo.GetUserByEmail(ctx, param.Email)
 	if err == nil {
@@ -28,7 +28,7 @@ func (s *AuthService) RegisterUser(ctx context.Context, param RegisterUserParam)
 	// If not existed:
 	// 1. Create a user in the application.
 	uid := uuid.NewString()
-	user, err := s.userRepo.CreateUser(ctx, auth.NewUser(uid, param.Email, param.Name))
+	user, err := s.userRepo.CreateUser(ctx, domain.NewUser(uid, param.Email, param.Name))
 	if err != nil {
 		s.logger(ctx).Error().Err(err).Msg("failed to register user")
 		return nil, err
@@ -42,7 +42,7 @@ type LoginUserParam struct {
 	Password string
 }
 
-func (s *AuthService) LoginUser(ctx context.Context, param LoginUserParam) (*auth.User, common.Error) {
+func (s *AuthService) LoginUser(ctx context.Context, param LoginUserParam) (*domain.User, common.Error) {
 	// Authenticate the account
 	user, err := s.userRepo.GetUserByEmail(ctx, param.Email)
 	if err != nil {

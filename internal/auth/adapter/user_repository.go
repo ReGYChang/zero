@@ -10,7 +10,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
 
-	"zero/internal/auth/domain/auth"
+	"zero/internal/auth/domain"
 	"zero/internal/auth/domain/common"
 )
 
@@ -54,7 +54,7 @@ func (c *repoColumnPatternUser) columns() string {
 	}, ", ")
 }
 
-func (r *PostgresRepository) CreateUser(ctx context.Context, param auth.User) (*auth.User, common.Error) {
+func (r *PostgresRepository) CreateUser(ctx context.Context, param domain.User) (*domain.User, common.Error) {
 	insert := map[string]interface{}{
 		repoColumnUser.UID:   param.UID,
 		repoColumnUser.Email: param.Email,
@@ -76,11 +76,11 @@ func (r *PostgresRepository) CreateUser(ctx context.Context, param auth.User) (*
 	}
 
 	// map the query result back to domain model
-	user := auth.User(row)
+	user := domain.User(row)
 	return &user, nil
 }
 
-func (r *PostgresRepository) GetUserByEmail(ctx context.Context, email string) (*auth.User, common.Error) {
+func (r *PostgresRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, common.Error) {
 	query, args, err := r.pgsq.Select(repoColumnUser.columns()).
 		From(repoTableUser).
 		Where(sq.Eq{repoColumnUser.Email: email}).
@@ -100,6 +100,6 @@ func (r *PostgresRepository) GetUserByEmail(ctx context.Context, email string) (
 	}
 
 	// map the query result back to domain model
-	user := auth.User(row)
+	user := domain.User(row)
 	return &user, nil
 }

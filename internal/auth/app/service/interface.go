@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"zero/internal/auth/domain/auth"
+	"zero/internal/auth/domain"
 	"zero/internal/auth/domain/common"
 )
 
@@ -13,6 +13,6 @@ type AuthServer interface {
 }
 
 type UserRepository interface {
-	GetUserByEmail(ctx context.Context, email string) (*auth.User, common.Error)
-	CreateUser(ctx context.Context, user auth.User) (*auth.User, common.Error)
+	GetUserByEmail(ctx context.Context, email string) (*domain.User, common.Error)
+	CreateUser(ctx context.Context, user domain.User) (*domain.User, common.Error)
 }

@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"zero/internal/auth/domain/auth"
+	"zero/internal/auth/domain"
 	"zero/internal/auth/domain/common"
 )
 
@@ -23,20 +23,20 @@ func GetAuthorizationToken(c *gin.Context) (string, common.Error) {
 	return token, nil
 }
 
-func GetCurrentUser(c *gin.Context) (*auth.User, common.Error) {
+func GetCurrentUser(c *gin.Context) (*domain.User, common.Error) {
 	data, ok := c.Get(KeyUser)
 	if !ok {
 		return nil, common.NewError(common.ErrorCodeAuthNotAuthenticated, errors.New("no credential"))
 	}
 
-	cred, ok := data.(auth.User)
+	cred, ok := data.(domain.User)
 	if !ok {
 		return nil, common.NewError(common.ErrorCodeAuthNotAuthenticated, errors.New("failed to assert credential"))
 	}
 	return &cred, nil
 }
 
-func SetUser(c *gin.Context, trader auth.User) common.Error {
+func SetUser(c *gin.Context, trader domain.User) common.Error {
 	c.Set(KeyUser, trader)
 	return nil
 }
