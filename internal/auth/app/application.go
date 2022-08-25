@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/rs/zerolog/log"
 
 	"zero/internal/auth/adapter"
 	"zero/internal/auth/app/service"
@@ -29,7 +30,15 @@ type ApplicationParams struct {
 	TokenIssuer         string
 }
 
-func NewApplication(ctx context.Context, wg *sync.WaitGroup, params ApplicationParams) (*Application, error) {
+func MustNewApplication(ctx context.Context, wg *sync.WaitGroup, params ApplicationParams) *Application {
+	app, err := NewApplication(ctx, wg, params)
+	if err != nil {
+		log.Panic().Err(err).Msgf("fail to new application")
+	}
+	return app
+}
+
+func NewApplication(ctx context.Context, _ *sync.WaitGroup, params ApplicationParams) (*Application, error) {
 	// Create repositories
 	db := sqlx.MustOpen("postgres", params.DatabaseDSN)
 	if err := db.Ping(); err != nil {

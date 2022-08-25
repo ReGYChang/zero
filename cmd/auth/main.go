@@ -8,6 +8,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"zero/config"
+	"zero/internal/auth/app"
 	"zero/internal/auth/router"
 	"zero/pkg/http"
 )
@@ -43,7 +44,7 @@ type AppConfig struct {
 var appConfig AppConfig
 
 func main() {
-	app := &cli.App{
+	a := &cli.App{
 		Name:     "auth",
 		Usage:    "Start the auth service",
 		Compiled: time.Now(),
@@ -68,14 +69,20 @@ func main() {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			r := router.NewRouter()
+			r := router.NewRouter(app.ApplicationParams{
+				Env:                 appConfig.Env,
+				DatabaseDSN:         appConfig.DatabaseDSN,
+				TokenSigningKey:     []byte(appConfig.TokenSigningKey),
+				TokenExpiryDuration: time.Duration(appConfig.TokenExpiryDurationHour),
+				TokenIssuer:         appConfig.TokenIssuer,
+			})
 			srv := http.NewServer(r.Load())
 
 			return srv.Start()
 		},
 	}
 
-	if err := app.Run(os.Args); err != nil {
+	if err := a.Run(os.Args); err != nil {
 		log.Fatal().Err(err).Msg("")
 	}
 }

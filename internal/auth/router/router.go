@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"net/http"
+	"sync"
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
@@ -14,8 +15,9 @@ type Router struct {
 	app *app.Application
 }
 
-func NewRouter() *Router {
-	a := new(app.Application)
+func NewRouter(params app.ApplicationParams) *Router {
+	wg := &sync.WaitGroup{}
+	a := app.MustNewApplication(context.TODO(), wg, params)
 	return &Router{
 		app: a,
 	}

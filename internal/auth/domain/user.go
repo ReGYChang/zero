@@ -1,4 +1,4 @@
-package auth
+package domain
 
 import (
 	"errors"
@@ -27,16 +27,16 @@ func NewUser(uid string, email string, name string) User {
 }
 
 type UserClaim struct {
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 	User
 }
 
 func GenerateUserToken(user User, signingKey []byte, expiryDuration time.Duration, issuer string) (string, common.Error) {
 	claim := &UserClaim{
-		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(expiryDuration).Unix(),
+		jwt.RegisteredClaims{
+			ExpiresAt: &jwt.NumericDate{Time: time.Now().Add(expiryDuration)},
 			Issuer:    issuer,
-			IssuedAt:  time.Now().Unix(),
+			IssuedAt:  &jwt.NumericDate{Time: time.Now()},
 		},
 		user,
 	}
@@ -47,6 +47,7 @@ func GenerateUserToken(user User, signingKey []byte, expiryDuration time.Duratio
 	if err != nil {
 		return "", common.NewError(common.ErrorCodeInternalProcess, err, common.WithMsg("failed to generate token"))
 	}
+
 	return signedToken, nil
 }
 
