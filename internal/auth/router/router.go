@@ -35,6 +35,7 @@ func (r *Router) Load() http.Handler {
 
 func registerAPIHandlers(router *gin.Engine, app *app.Application) {
 	// Build middlewares
+	//BearerToken := NewAuthMiddlewareBearer(app)
 
 	// We mount all handlers under /api path
 	r := router.Group("/api")

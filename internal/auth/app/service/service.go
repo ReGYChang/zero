@@ -23,7 +23,7 @@ type AuthServiceParam struct {
 	Issuer         string
 }
 
-func NewAuthService(ctx context.Context, param *AuthServiceParam) *AuthService {
+func NewAuthService(_ context.Context, param *AuthServiceParam) *AuthService {
 	return &AuthService{
 		userRepo:       param.UserRepo,
 		signingKey:     param.SigningKey,
