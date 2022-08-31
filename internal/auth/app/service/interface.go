@@ -7,12 +7,9 @@ import (
 	"zero/internal/auth/domain/common"
 )
 
-type AuthServer interface {
-	RegisterAccount(ctx context.Context, email string, password string) (string, common.Error)
-	AuthenticateAccount(ctx context.Context, email string, password string) common.Error
-}
-
+//go:generate mockgen -destination automock/user_repository.go -package=automock . UserRepository
 type UserRepository interface {
+	AuthenticateUser(ctx context.Context, email string, password string) common.Error
 	GetUserByEmail(ctx context.Context, email string) (*domain.User, common.Error)
 	CreateUser(ctx context.Context, user domain.User) (*domain.User, common.Error)
 }

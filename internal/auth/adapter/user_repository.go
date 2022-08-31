@@ -103,3 +103,9 @@ func (r *PostgresRepository) GetUserByEmail(ctx context.Context, email string) (
 	user := domain.User(row)
 	return &user, nil
 }
+
+func (r *PostgresRepository) AuthenticateUser(_ context.Context, email string, password string) common.Error {
+	// Authenticate the account
+
+	return nil
+}
