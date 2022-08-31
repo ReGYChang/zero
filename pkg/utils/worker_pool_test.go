@@ -47,8 +47,8 @@ func Test_WorkerPool(t *testing.T) {
 				  }
 			`),
 		}
-		JobQueue <- j
-		t.Log("Operation successful")
+		d.JobQueue <- j
+		t.Logf("Operation successful: %d", i)
 	}
 }
 
@@ -78,6 +78,6 @@ func Benchmark_Worker_Pool(b *testing.B) {
 				  }
 			`),
 		}
-		JobQueue <- j
+		d.JobQueue <- j
 	}
 }

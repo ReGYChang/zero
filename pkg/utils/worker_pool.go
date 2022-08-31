@@ -1,21 +1,19 @@
 package utils
 
-var JobQueue chan Job
-
 type Job interface {
 	Execute()
 }
 
 type Worker struct {
-	WorkerPool chan chan Job
-	JobChannel chan Job
+	workerPool chan chan Job
+	jobChannel chan Job
 	done       chan bool
 }
 
 func NewWorker(workerPool chan chan Job) *Worker {
 	return &Worker{
-		WorkerPool: workerPool,
-		JobChannel: make(chan Job),
+		workerPool: workerPool,
+		jobChannel: make(chan Job),
 		done:       make(chan bool),
 	}
 }
@@ -26,10 +24,10 @@ func (w *Worker) Start() {
 	go func() {
 		for {
 			// register the current worker into the worker pool.
-			w.WorkerPool <- w.JobChannel
+			w.workerPool <- w.jobChannel
 
 			select {
-			case job := <-w.JobChannel:
+			case job := <-w.jobChannel:
 				// we have received a work request.
 				job.Execute()
 
@@ -48,23 +46,30 @@ func (w *Worker) Stop() {
 }
 
 type Dispatcher struct {
+	// A pool of jobs channel that are waiting to be executed
+	JobQueue chan Job
 	// A pool of workers channels that are registered with the dispatcher
-	WorkerPool chan chan Job
+	workerPool chan chan Job
 	maxWorkers int
 	maxJobs    int
 }
 
 func NewDispatcher(maxWorkers int, maxJobs int) *Dispatcher {
-	JobQueue = make(chan Job, maxJobs)
-	pool := make(chan chan Job, maxWorkers)
+	jobQueue := make(chan Job, maxJobs)
+	workerPool := make(chan chan Job, maxWorkers)
 
-	return &Dispatcher{WorkerPool: pool, maxJobs: maxJobs, maxWorkers: maxWorkers}
+	return &Dispatcher{
+		JobQueue:   jobQueue,
+		workerPool: workerPool,
+		maxJobs:    maxJobs,
+		maxWorkers: maxWorkers,
+	}
 }
 
 func (d *Dispatcher) Run() {
 	// starting n number of workers
 	for i := 0; i < d.maxWorkers; i++ {
-		worker := NewWorker(d.WorkerPool)
+		worker := NewWorker(d.workerPool)
 		worker.Start()
 	}
 
@@ -74,12 +79,12 @@ func (d *Dispatcher) Run() {
 func (d *Dispatcher) dispatch() {
 	for {
 		select {
-		case job := <-JobQueue:
+		case job := <-d.JobQueue:
 			// a job request has been received
 			go func(job Job) {
 				// try to obtain a worker job channel that is available.
 				// this will block until a worker is idle
-				jobChannel := <-d.WorkerPool
+				jobChannel := <-d.workerPool
 
 				// dispatch the job to the worker job channel
 				jobChannel <- job
