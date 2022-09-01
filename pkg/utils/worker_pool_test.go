@@ -1,22 +1,18 @@
 package utils
 
 import (
-	"encoding/json"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type mockJob struct {
-	payload []byte
+	payload []int
+	index   int
 }
 
 func (m *mockJob) Execute() {
-	b := m.payload
-	for i := 0; i < 100; i++ {
-		var mt map[string]interface{}
-
-		_ = json.Unmarshal(b, &mt)
-		b, _ = json.Marshal(mt)
-	}
+	m.payload[m.index] = 1
 }
 
 func Test_WorkerPool(t *testing.T) {
@@ -25,58 +21,28 @@ func Test_WorkerPool(t *testing.T) {
 	d := NewDispatcher(100, 100)
 	d.Run()
 
+	a := make([]int, request)
 	for i := 0; i < request; i++ {
 		j := &mockJob{
-			payload: []byte(`
-				"person": {
-					"name": {
-					  "first": "Leonid",
-					  "last": "Bugaev",
-					  "fullName": "Leonid Bugaev"
-					},
-					"github": {
-					  "handle": "buger",
-					  "followers": 109
-					},
-					"avatars": [
-					  { "url": "https://avatars1.githubusercontent.com/u/14009?v=3&s=460", "type": "thumbnail" }
-					]
-				  },
-				  "company": {
-					"name": "Acme"
-				  }
-			`),
+			payload: a,
+			index:   i,
 		}
 		d.JobQueue <- j
-		t.Logf("Operation successful: %d", i)
+	}
+
+	for _, val := range a {
+		assert.Equal(t, val, 1)
 	}
 }
-
 func Benchmark_Worker_Pool(b *testing.B) {
 	d := NewDispatcher(100, 100)
 	d.Run()
 
+	a := make([]int, b.N)
 	for i := 0; i < b.N; i++ {
 		j := &mockJob{
-			payload: []byte(`
-				"person": {
-					"name": {
-					  "first": "Regy",
-					  "last": "Chang",
-					  "fullName": "Handsome Guy"
-					},
-					"github": {
-					  "handle": "regy",
-					  "followers": 3
-					},
-					"avatars": [
-					  { "url": "https://avatars1.githubusercontent.com/u/14009?v=3&s=460", "type": "thumbnail" }
-					]
-				  },
-				  "company": {
-					"name": "NexAIoT"
-				  }
-			`),
+			payload: a,
+			index:   i,
 		}
 		d.JobQueue <- j
 	}
