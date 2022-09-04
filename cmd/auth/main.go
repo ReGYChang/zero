@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -14,14 +16,14 @@ import (
 )
 
 const (
-	appName                        = "zero"
+	appName                        = "auth"
 	appVersion                     = "0.0.0"
 	defaultEnv                     = "staging"
 	defaultLogLevel                = "info"
 	defaultPort                    = 8787
 	defaultTokenSigningKey         = "cb-signing-key" // nolint
-	defaultTokenExpiryDurationHour = "8"
-	defaultTokenTokenIssuer        = "zero"
+	defaultTokenExpiryDurationHour = 8
+	defaultTokenIssuer             = "zero"
 )
 
 type AppConfig struct {
@@ -48,6 +50,11 @@ func main() {
 		Name:     "auth",
 		Usage:    "Start the auth service",
 		Compiled: time.Now(),
+		Version: fmt.Sprintf(
+			"version %s, built on %s",
+			appVersion,
+			runtime.Version(),
+		),
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:        "log-level",
@@ -63,6 +70,30 @@ func main() {
 				Value:       defaultPort,
 				EnvVars:     []string{"ZR_PORT"},
 				Destination: &config.Entrypoint.Port,
+			},
+
+			&cli.StringFlag{
+				Name:        "token-signing-key",
+				Usage:       "token signing key",
+				Value:       defaultTokenSigningKey,
+				EnvVars:     []string{"ZR_TOKEN_SIGNING_KEY"},
+				Destination: &appConfig.TokenSigningKey,
+			},
+
+			&cli.IntFlag{
+				Name:        "token-expiry-duration-hour",
+				Usage:       "token expiry duration hour",
+				Value:       defaultTokenExpiryDurationHour,
+				EnvVars:     []string{"ZR_TOKEN_EXPIRE_DURATION_HOUR"},
+				Destination: &appConfig.TokenExpiryDurationHour,
+			},
+
+			&cli.StringFlag{
+				Name:        "token-issuer",
+				Usage:       "token issuer",
+				Value:       defaultTokenIssuer,
+				EnvVars:     []string{"ZR_PORT"},
+				Destination: &appConfig.TokenIssuer,
 			},
 		},
 		Before: func(ctx *cli.Context) error {
