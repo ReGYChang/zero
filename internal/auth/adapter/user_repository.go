@@ -23,7 +23,7 @@ type repoUser struct {
 	UpdatedAt time.Time `db:"updated_at"`
 }
 
-const repoTableUser = "auth"
+const repoTableUser = "user"
 
 type repoColumnPatternUser struct {
 	ID        string

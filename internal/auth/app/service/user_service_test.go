@@ -130,7 +130,7 @@ func TestAuthService_LoginUser(t *testing.T) {
 			SetupService: func(t *testing.T) *AuthService {
 				mock := buildServiceMock(ctrl)
 
-				mock.UserRepo.EXPECT().GetUserByEmail(gomock.Any(), args.User.Email).Return(&args.User, nil)
+				mock.UserRepo.EXPECT().GetUserByEmail(gomock.Any(), args.User.Email).Return(nil, common.DomainError{})
 
 				service := buildService(mock)
 				return service

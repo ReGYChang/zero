@@ -28,7 +28,7 @@ func getTestPostgresDB() *sqlx.DB {
 }
 
 // migrationSourcePath is a relative path to the collection storing all migration scripts
-const migrationSourcePath = "file://../../../../migrations"
+const migrationSourcePath = "file://../../../migrations"
 const testPostgresName = "repo_test"
 
 func buildTestPostgresDB() (*sqlx.DB, func(), error) {

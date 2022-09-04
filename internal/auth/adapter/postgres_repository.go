@@ -16,7 +16,7 @@ type PostgresRepository struct {
 	pgsq sq.StatementBuilderType
 }
 
-func NewPostgresRepository(ctx context.Context, db *sqlx.DB) *PostgresRepository {
+func NewPostgresRepository(_ context.Context, db *sqlx.DB) *PostgresRepository {
 	return &PostgresRepository{
 		db: db,
 		// set the default placeholder as $ instead of ? because postgres uses $
