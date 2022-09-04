@@ -47,6 +47,6 @@ migrate-db-down:
 migrate-db-force-%:
 	docker run --rm -v $(shell pwd)/migrations:/migrations --network host migrate/migrate -verbose -path=/migrations/ -database=$(DATABASE_DSN) force $*
 
-# Only used for local dev
+# Only used for local auth
 init-local-db:
 	docker exec cantata-postgres bash -c "psql -U zero_test -d zero_test -f /testdata/init_local_dev.sql"
