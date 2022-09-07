@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"os"
-	"runtime"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -13,11 +11,13 @@ import (
 	"zero/internal/auth/app"
 	"zero/internal/auth/router"
 	"zero/pkg/http"
+	"zero/pkg/logger"
 )
 
 const (
 	appName                        = "auth"
 	appVersion                     = "0.0.0"
+	appBuild                       = "unknown_build"
 	defaultEnv                     = "staging"
 	defaultLogLevel                = "info"
 	defaultPort                    = 8787
@@ -43,25 +43,31 @@ type AppConfig struct {
 	TokenIssuer             string
 }
 
-var appConfig AppConfig
+var (
+	appConfig AppConfig
+)
 
 func main() {
 	a := &cli.App{
 		Name:     "auth",
 		Usage:    "Start the auth service",
 		Compiled: time.Now(),
-		Version: fmt.Sprintf(
-			"version %s, built on %s",
-			appVersion,
-			runtime.Version(),
-		),
+		Version:  appVersion,
 		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:        "Env",
+				Usage:       "Env",
+				Value:       defaultEnv,
+				EnvVars:     []string{"ZR_ENV"},
+				Destination: &appConfig.Env,
+			},
+
 			&cli.StringFlag{
 				Name:        "log-level",
 				Usage:       "Log filtering level",
 				Value:       defaultLogLevel,
 				EnvVars:     []string{"ZR_LOG_LEVEL"},
-				Destination: &appConfig.Env,
+				Destination: &appConfig.LogLevel,
 			},
 
 			&cli.IntFlag{
@@ -100,6 +106,14 @@ func main() {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
+			// Create root logger
+			rootLogger := logger.InitRootLogger(appConfig.LogLevel, appName, appConfig.Env)
+
+			rootLogger.Info().
+				Str("version", appVersion).
+				Str("build", appBuild).
+				Msgf("Launching %s", appName)
+
 			r := router.NewRouter(app.ApplicationParams{
 				Env:                 appConfig.Env,
 				DatabaseDSN:         appConfig.DatabaseDSN,

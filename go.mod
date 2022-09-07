@@ -17,9 +17,11 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.6
+	github.com/neo4j/neo4j-go-driver/v4 v4.4.4
 	github.com/ory/dockertest/v3 v3.9.1
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.27.0
+	github.com/sijms/go-ora/v2 v2.5.3
 	github.com/stretchr/testify v1.8.0
 	github.com/urfave/cli/v2 v2.11.1
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
