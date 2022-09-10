@@ -9,7 +9,7 @@ BUILD_DATE ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 DATABASE_DSN="postgresql://zero_test:zero_test@localhost:5432/zero_test?sslmode=disable"
 TEST_PACKAGES = ./internal/...
 
-.PHONY: build check fmt generate proto
+.PHONY: build check fmt generate proto test
 
 build: generate proto
 	@sh -c "'$(CURDIR)/scripts/build.sh'"
