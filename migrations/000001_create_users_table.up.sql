@@ -1,4 +1,4 @@
-CREATE TABLE "user"
+CREATE TABLE IF NOT EXISTS users
 (
     id         serial
         constraint user_pk
@@ -11,4 +11,4 @@ CREATE TABLE "user"
 );
 
 CREATE UNIQUE INDEX user_uid_uniq
-    on "user" (uid);
+    on users (uid);
