@@ -10,6 +10,8 @@ import (
 
 	"zero/internal/auth/adapter"
 	"zero/internal/auth/app/service"
+
+	_ "github.com/golang-migrate/migrate/v4/database/postgres" // db driver
 )
 
 type Application struct {
